@@ -41,7 +41,6 @@ subroutine VTSWriter(Time,Step,nx,ny,x,y,T,U,V,opt)
   write(num2char,'(i9.9)') Step
   FileName = 'sol_'//trim(num2char)//'.vts'
   open(8,file=FileName)
-  write(*,*) nx,ny
   write(num2char,*) 3*nx*ny
   formatperso = '('//trim(num2char)//'(E15.9,1x))'
   write(8,'(a)') '<?xml version="1.0"?>'
