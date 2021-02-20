@@ -13,12 +13,8 @@ program main
     U(:,:) = 0.
     V(:,:) = 0.
     call def_maillage(p,m)
+    write(*,*) "[I] Exportation des données."
     call VTSWriter(10.,1,m%Nx,m%Ny,m%xn,m%yn,T,U,V,'ini')
-    open(11,file='res.dat')
-    write(11,*) (m%xn(i,1),i=1,m%Nx)
-    write(11,*) (m%yn(1,i),i=1,m%Ny)
-    write(11,*) (m%dyn(i),i=1,m%Ny-1)
-    close(11)
-    deallocate(m%xn,m%yn,m%dyn,T,U,V)
-    
+    deallocate(m%xn,m%yn,T,U,V)
+    write(*,*) "[I] Fini."
 end program main
