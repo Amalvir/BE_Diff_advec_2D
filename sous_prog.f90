@@ -1,4 +1,6 @@
 subroutine lecture_donnee(p,m)
+        ! Lis les données d'entrée du problème dans le fichier donnee.dat
+        ! Pour les mettre dans p (struc phys) et m (struc maillage).
         use m_type
         implicit none
 
@@ -20,6 +22,7 @@ subroutine lecture_donnee(p,m)
 end subroutine lecture_donnee
 
 subroutine def_maillage(p,m)
+        ! Calcul les coordonnées des noeuds du maillage m grâce aux données de p (stuc phys) et m. Maillage régulier selon x mais irrégulier selon y.
         use m_type
         implicit none
 
@@ -41,8 +44,7 @@ subroutine def_maillage(p,m)
         end do
 
         write(*,*) "[I] Maillage irrégulier selon y"
-        m%yn(:,1) = 0.
-        do i=2,m%Ny
+        do i=1,m%Ny
                 y_reg = real(i-1)*p%L/real(m%Ny-1)
                 m%yn(:,i) = y_reg - p%L/(3.*PI)*sin((2.*PI*y_reg)/p%L)
                 !m%dyn(i-1) = m%yn(1,i) - m%yn(1,i-1)

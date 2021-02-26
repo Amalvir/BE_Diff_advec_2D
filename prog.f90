@@ -1,4 +1,5 @@
 program main
+    ! Programme principal. 
     use m_type
     implicit none
     
