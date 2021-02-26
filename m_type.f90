@@ -10,7 +10,7 @@ type maillage
         real :: dx
         integer :: Nx,Ny
         real, dimension(:),allocatable :: dyn,dyv
-        real, dimension(:,:), allocatable :: xn,yn
+        real, dimension(:,:), allocatable :: xn,yn,U,V
 end type maillage
 
 type flux
