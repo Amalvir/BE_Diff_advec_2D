@@ -22,7 +22,8 @@ type maillage
         real, dimension(:,:), allocatable :: xn,yn,U,V
 end type maillage
 
-type flux
+type conc
         real, dimension(:,:), allocatable :: Fo,Fe,Fs,Fn
-end type flux
+        real, dimension(:,:), allocatable :: mat_c
+end type conc
 end module m_type

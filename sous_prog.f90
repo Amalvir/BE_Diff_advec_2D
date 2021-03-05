@@ -67,14 +67,14 @@ subroutine vitesse(p,m)
         allocate(m%u(m%nx,m%ny-1), m%v(m%nx-1,m%ny))
 
         do i = 1,m%nx-1
-                do j = 1,m%ny-1
+            do j = 1,m%ny-1
                 dyn = m%yn(i,j+1) - m%yn(i,j)
                 m%u(i,j)=p%alph*sin(PI*m%xn(i,j)/p%L)*cos(PI*(m%yn(i,j) + dyn/2.)/p%L) ! beta = 0
                 m%v(i,j)=-p%alph*cos(PI*(m%xn(i,j)+m%dx/2.)/p%L)*sin(PI*m%yn(i,j)/p%L)
-                end do
+            end do
         end do
         do j = 1,m%ny-1
-                dyn = m%yn(m%nx,j+1) - m%yn(m%nx,j)
+                dyn = m%yn(i,j+1) - m%yn(i,j)
                 m%u(m%nx,j)=p%alph*sin(PI*m%xn(m%nx,j)/p%L)*cos(PI*(m%yn(m%nx,j) + dyn/2.)/p%L)
         end do
         do i=1,m%nx-1
@@ -83,3 +83,27 @@ subroutine vitesse(p,m)
 
 end subroutine vitesse
 
+subroutine concentration(p, m, c, t)
+        use m_type
+        implicit none
+
+        type(maillage), intent(in) :: m
+        type(phys), intent(in) :: p
+        type(conc), intent(out) :: c
+        real, intent(in) :: t
+        real :: dyn, Se, So, Sn, Ss
+        integer :: i,j
+
+        allocate(c%Fo(m%nx-1,m%ny-1),c%Fe(m%nx-1,m%ny-1),c%Fs(m%nx-1,m%ny-1),c%Fn(m%nx-1,m%ny-1))
+
+        do i = 1, m%nx-1
+        	do j = 1, m%ny-1
+        		Se = m%yn(i,j+1) - m%yn(i,j)
+        		So = Se
+        		if (m%u(i,j) >= 0) then
+        			c%Fe = c%mat_c(i,j)*m%u(i,j)*Se
+        			
+        		end if
+        	end do
+        end do
+end subroutine concentration
