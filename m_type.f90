@@ -6,7 +6,7 @@ type phys
         ! D Coeff de diffusion ; C0 Concentration initiale face nord ; 
         ! C1 Concentration initiale face sud ; alph Paramètre alpha
 
-        real :: L,D,C0,C1,alph
+        real :: L,t_tot,D,C0,C1,alph
 end type phys
 
 type maillage
@@ -17,13 +17,13 @@ type maillage
         ! On aurait pu utiliser des vecteurs mais le programme aurait été moins flexible. 
 
         real :: dx
-        integer :: Nx,Ny
+        integer :: nx,ny,nt
         real, dimension(:),allocatable :: dyn,dyv
         real, dimension(:,:), allocatable :: xn,yn,U,V
 end type maillage
 
 type conc
         real, dimension(:,:), allocatable :: Fo,Fe,Fs,Fn
-        real, dimension(:,:), allocatable :: mat_c
+        real, dimension(:,:), allocatable :: mat_c ! Taille : (nx-1)x(ny-1)
 end type conc
 end module m_type

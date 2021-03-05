@@ -11,12 +11,14 @@ subroutine lecture_donnee(p,m)
         open(10,file='donnee.dat')
         
         read(10,*) p%L
+        read(10,*) p%t_tot
         read(10,*) p%D
         read(10,*) p%C0
         read(10,*) p%C1
         read(10,*) p%alph
-        read(10,*) m%Nx
-        read(10,*) m%Ny
+        read(10,*) m%nx
+        read(10,*) m%ny
+        read(10,*) m%nt
         close(10)
 
 end subroutine lecture_donnee
@@ -91,19 +93,42 @@ subroutine concentration(p, m, c, t)
         type(phys), intent(in) :: p
         type(conc), intent(out) :: c
         real, intent(in) :: t
-        real :: dyn, Se, So, Sn, Ss
         integer :: i,j
+        
+        
 
-        allocate(c%Fo(m%nx-1,m%ny-1),c%Fe(m%nx-1,m%ny-1),c%Fs(m%nx-1,m%ny-1),c%Fn(m%nx-1,m%ny-1))
-
-        do i = 1, m%nx-1
-        	do j = 1, m%ny-1
-        		Se = m%yn(i,j+1) - m%yn(i,j)
-        		So = Se
-        		if (m%u(i,j) >= 0) then
-        			c%Fe = c%mat_c(i,j)*m%u(i,j)*Se
-        			
-        		end if
-        	end do
-        end do
 end subroutine concentration
+
+subroutine cal_Fe(c, m)
+        use m_type
+        implicit none
+        
+        type(conc), intent(inout) :: c
+        type(maillage), intent(in) :: m
+        integer :: i,j
+        real :: Se
+
+        allocate(c%Fe(m%nx-1,m%ny-1))
+
+        do i = 1,m%nx-2
+                do j = 1,m%ny-2
+                        Se = m%yn(i,j+1) - m%yn(i,j)
+                        if (m%u(i,j) >= 0.) then
+                                c%Fe(i,j) = c%mat_c(i,j)*m%u(i,j)*Se
+                        else
+                                c%Fe(i,j) = c%mat_c(i+1,j)*m%u(i,j)*Se
+                        end if
+                end do
+        end do 
+
+        ! Conditions aux limites
+        
+        do j = 1,m%ny-1
+                Se = m%yn(i,j+1) - m%yn(i,j)
+                if (m%u(i,j) >= 0.) then
+                        c%Fe(i,j) = c%mat_c(i,j)*m%u(i,j)*Se
+                else
+                        c%Fe(i,j) = 0.
+                end if
+        end do
+end subroutine cal_Fe
