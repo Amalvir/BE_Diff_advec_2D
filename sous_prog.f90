@@ -99,7 +99,7 @@ subroutine concentration(p, m, c, t)
 
 end subroutine concentration
 
-subroutine cal_Fe(c, m)
+subroutine cal_Fe_adv(c, m)
         use m_type
         implicit none
         
@@ -108,15 +108,15 @@ subroutine cal_Fe(c, m)
         integer :: i,j
         real :: Se
 
-        allocate(c%Fe(m%nx-1,m%ny-1))
+        allocate(c%Fe_adv(m%nx-1,m%ny-1))
 
         do i = 1,m%nx-2
                 do j = 1,m%ny-2
                         Se = m%yn(i,j+1) - m%yn(i,j)
                         if (m%u(i,j) >= 0.) then
-                                c%Fe(i,j) = c%mat_c(i,j)*m%u(i,j)*Se
+                                c%Fe_adv(i,j) = c%mat_c(i,j)*m%u(i,j)*Se
                         else
-                                c%Fe(i,j) = c%mat_c(i+1,j)*m%u(i,j)*Se
+                                c%Fe_adv(i,j) = c%mat_c(i+1,j)*m%u(i,j)*Se
                         end if
                 end do
         end do 
@@ -126,9 +126,9 @@ subroutine cal_Fe(c, m)
         do j = 1,m%ny-1
                 Se = m%yn(i,j+1) - m%yn(i,j)
                 if (m%u(i,j) >= 0.) then
-                        c%Fe(i,j) = c%mat_c(i,j)*m%u(i,j)*Se
+                        c%Fe_adv(i,j) = c%mat_c(i,j)*m%u(i,j)*Se
                 else
-                        c%Fe(i,j) = 0.
+                        c%Fe_adv(i,j) = 0.
                 end if
         end do
-end subroutine cal_Fe
+end subroutine cal_Fe_adv
