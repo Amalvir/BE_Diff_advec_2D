@@ -99,6 +99,8 @@ subroutine concentration(p, m, c, t)
 
 end subroutine concentration
 
+! Subroutine pour le flux Est advectif, faut faire celle pour le reste...
+
 subroutine cal_Fe_adv(c, m)
         use m_type
         implicit none
@@ -124,11 +126,11 @@ subroutine cal_Fe_adv(c, m)
         ! Conditions aux limites
         
         do j = 1,m%ny-1
-                Se = m%yn(i,j+1) - m%yn(i,j)
+                Se = m%yn(i,j+1) - m%yn(i,j) ! Je sais pas par quoi remplacer i
                 if (m%u(i,j) >= 0.) then
-                        c%Fe_adv(i,j) = c%mat_c(i,j)*m%u(i,j)*Se
+                        c%Fe_adv(m%nx-1,j) = c%mat_c(m%nx-1,j)*m%u(m%nx-1,j)*Se
                 else
-                        c%Fe_adv(i,j) = 0.
+                        c%Fe_adv(m%nx-1,j) = 0.
                 end if
         end do
 end subroutine cal_Fe_adv
