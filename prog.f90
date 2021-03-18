@@ -24,8 +24,8 @@ program main
         call VTSWriter(0.,1,m%Nx,m%Ny,m%xn,m%yn,c%mat_c,m%u,m%v,'ini')
         dt = p%t_tot/real(m%nt-1)
         do i=2,m%nt
-                conc_n = c%mat_c
-                call concentration(c, m, conc_n, dt)
+                conc_n = c%mat_c ! La matrice C(i,j)^n
+                call concentration(c, m, conc_n, dt) ! La matrice C(i,j)^n+1
                 if i == m%nt then
                         call VTSWriter(p%t_tot,m%nt,m%nx,m%ny,m%xn,m%yn,c%mat_c,m%u,m%v,'end')
                 else

@@ -23,8 +23,8 @@ type maillage
 end type maillage
 
 type conc
-        real, dimension(:,:), allocatable :: Fo_adv,Fe_adv,Fs_adv,Fn_adv
-        real, dimension(:,:), allocatable :: Fo_diff,Fe_diff,Fs_diff,Fn_diff
-        real, dimension(:,:), allocatable :: mat_c ! Taille : (nx-1)x(ny-1)
+        real, dimension(:,:), allocatable :: Fo_adv,Fe_adv,Fs_adv,Fn_adv ! Les flux advectifs
+        real, dimension(:,:), allocatable :: Fo_diff,Fe_diff,Fs_diff,Fn_diff ! Les flux diffusifs
+        real, dimension(:,:), allocatable :: mat_c ! Taille : (nx-1)x(ny-1) ! La matrice C
 end type conc
 end module m_type
