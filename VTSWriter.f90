@@ -1,5 +1,5 @@
 !**************************************************
-subroutine VTSWriter(Time,Step,nx,ny,x,y,C,U,V,opt)
+subroutine VTSWriter(Time,Step,nx,ny,x,y,T,U,V,opt)
 !-----------------------------------------------------------------------------#
 !  Time    : Reel, temps physique                                             #
 !  Step    : Entier, pas de temps = numero dans le nom de fichier,            #
@@ -11,7 +11,7 @@ subroutine VTSWriter(Time,Step,nx,ny,x,y,C,U,V,opt)
 !            des  volumes                                                     #
 !  y       : Tableau reel (de taille nx,ny) des ordonnees des noeuds          #
 !            des  volumes                                                     #
-!  C       : Tableaux reel (de taille nx-1 par ny-1) des valeurs a tracer     #
+!  T       : Tableaux reel (de taille nx-1 par ny-1) des valeurs a tracer     #
 !            (valeurs au centre des volumes de controle)                      #
 !  U       : Tableaux reel (de taille nx   par ny-1) des valeurs a tracer     #
 !            (valeurs au centre des facettes de normale + ou -x               #
@@ -28,7 +28,7 @@ subroutine VTSWriter(Time,Step,nx,ny,x,y,C,U,V,opt)
   real, intent(in)                       :: Time
   integer, intent(in)                    :: Step, nx, ny
   real, dimension(nx,ny)    , intent(in) :: x, y
-  real, dimension(nx-1,ny-1), intent(in) :: C
+  real, dimension(nx-1,ny-1), intent(in) :: T
   real, dimension(nx,ny-1)  , intent(in) :: U
   real, dimension(nx-1,ny)  , intent(in) :: V
   character(3), intent(in)               :: opt
@@ -54,13 +54,13 @@ subroutine VTSWriter(Time,Step,nx,ny,x,y,C,U,V,opt)
      write(8,formatperso) (x(i,j),y(i,j),0.,i=1,nx)
   END DO
   write(8,'(a)') '</Points>'
-  write(8,'(a)') '<CellData Scalars="Concentration, U, V">'
+  write(8,'(a)') '<CellData Scalars="Température, U, V">'
 
   ! Ecriture du scalaire (temperature / concentration)
-  write(8,'(a)') '<DataArray type="Float32" Name="Conc, mol/L"/>'
+  write(8,'(a)') '<DataArray type="Float32" Name="Temp, K"/>'
   write(num2char,*) (nx-1)*(ny-1)
   DO j=1,ny-1
-     write(8,formatperso) (C(i,j),i=1,nx-1)
+     write(8,formatperso) (T(i,j),i=1,nx-1)
   END DO
 
   ! Ecriture de la composante U de la vitesse

@@ -6,7 +6,7 @@ type phys
         ! D Coeff de diffusion ; C0 Concentration initiale face nord ; 
         ! C1 Concentration initiale face sud ; alph Paramètre alpha
 
-        real :: L,t_tot,D,C0,C1,alph
+        real :: L,t_tot,D,C0,C1,alph,CFL,R
 end type phys
 
 type maillage
@@ -16,7 +16,7 @@ type maillage
         ! xn, yn Matrices taille nx x ny Abscisses et ordonnées des noeuds des volumes. 
         ! On aurait pu utiliser des vecteurs mais le programme aurait été moins flexible. 
 
-        real :: dx
+        real :: dx,dt
         integer :: nx,ny,nt
         real, dimension(:),allocatable :: dyn,dyv
         real, dimension(:,:), allocatable :: xn,yn,U,V
