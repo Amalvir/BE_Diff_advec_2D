@@ -84,14 +84,13 @@ subroutine vitesse(p,m)
 
 end subroutine vitesse
 
-subroutine concentration(p, m, c, conc_n)
+subroutine concentration(p, m, c)
         use m_type
         implicit none
 
         type(maillage), intent(in) :: m
         type(phys), intent(in) :: p
         type(conc), intent(inout) :: c
-        real, dimension(m%nx-1,M%ny-1), intent(in) :: conc_n
         integer :: i,j
         real :: vol, adv, diff
         
@@ -109,9 +108,9 @@ subroutine concentration(p, m, c, conc_n)
         do i = 1,m%nx-1
                 do j = 1,m%ny-1
                         vol = m%dx*(m%yn(i,j+1) - m%yn(i,j))
-                        adv = (c%Fo_adv(i,j) + c%Fe_adv(i,j)) + c%Fs_adv(i,j) + c%Fn_adv(i,j)
-                        diff = (c%Fo_diff(i,j) + c%Fe_diff(i,j)) + c%Fs_diff(i,j) + c%Fn_diff(i,j)
-                        c%mat_c(i,j) = conc_n(i,j) - m%dt/vol*(adv - p%D*diff)
+                        adv = c%Fo_adv(i,j) + c%Fe_adv(i,j) + c%Fs_adv(i,j) + c%Fn_adv(i,j)
+                        diff = c%Fo_diff(i,j) + c%Fe_diff(i,j) + c%Fs_diff(i,j) + c%Fn_diff(i,j)
+                        c%mat_c(i,j) = c%mat_c(i,j) - m%dt/vol*(adv - p%D*diff)
                         write(10,*) i, j, m%dt/vol, adv, diff
                 end do
         end do
@@ -137,9 +136,9 @@ subroutine cal_Fe_adv(c, m)
                 do j = 1,m%ny-2
                         Se = m%yn(i,j+1) - m%yn(i,j)
                         if (m%u(i,j) >= 0.) then
-                                c%Fe_adv(i,j) = c%mat_c(i,j)*m%u(i,j)*Se
+                                c%Fe_adv(i,j) = c%mat_c(i,j)*m%u(i+1,j)*Se
                         else
-                                c%Fe_adv(i,j) = c%mat_c(i+1,j)*m%u(i,j)*Se
+                                c%Fe_adv(i,j) = c%mat_c(i+1,j)*m%u(i+1,j)*Se
                         end if
                 end do
         end do 
@@ -148,8 +147,8 @@ subroutine cal_Fe_adv(c, m)
         
         do j = 1,m%ny-1
                 Se = m%yn(m%nx-1,j+1) - m%yn(m%nx-1,j) 
-                if (m%u(m%nx-1,j) >= 0.) then
-                        c%Fe_adv(m%nx-1,j) = c%mat_c(m%nx-1,j)*m%u(m%nx-1,j)*Se
+                if (m%u(m%nx,j) >= 0.) then
+                        c%Fe_adv(m%nx-1,j) = c%mat_c(m%nx-1,j)*m%u(m%nx,j)*Se
                 else
                         c%Fe_adv(m%nx-1,j) = 0.
                 end if
@@ -204,10 +203,10 @@ subroutine cal_Fn_adv(c,m,p)
         Sn = m%dx
         do i = 1,m%nx-2
                 do j = 1,m%ny-2
-                        if (m%v(i,j) >= 0.) then
-                                c%Fn_adv(i,j) = c%mat_c(i,j)*m%v(i,j)*Sn
+                        if (m%v(i,j+1) >= 0.) then
+                                c%Fn_adv(i,j) = c%mat_c(i,j)*m%v(i,j+1)*Sn
                         else
-                                c%Fn_adv(i,j) = c%mat_c(i,j+1)*m%v(i,j)*Sn
+                                c%Fn_adv(i,j) = c%mat_c(i,j+1)*m%v(i,j+1)*Sn
                         end if
                 end do
         end do 
@@ -215,10 +214,10 @@ subroutine cal_Fn_adv(c,m,p)
         ! Conditions aux limites
         
         do i = 1,m%nx-1
-                if (m%v(i,m%ny-1) >= 0.) then 
-                        c%Fn_adv(i,m%ny-1) = c%mat_c(i,m%ny-1)*m%v(i,m%ny-1)*Sn
+                if (m%v(i,m%ny) >= 0.) then 
+                        c%Fn_adv(i,m%ny-1) = c%mat_c(i,m%ny-1)*m%v(i,m%ny)*Sn
                 else
-                        c%Fn_adv(i,m%ny-1) = p%C0*m%v(i,m%ny-1)*Sn
+                        c%Fn_adv(i,m%ny-1) = p%C0*m%v(i,m%ny)*Sn
                 end if
         end do
 end subroutine cal_Fn_adv
@@ -361,22 +360,22 @@ subroutine cal_Fs_diff(c,m,p)
 end subroutine cal_Fs_diff
 
 subroutine pdt(p,m)
-    use m_type
-    implicit none 
+	use m_type
+	implicit none 
 
-        type(phys), intent(in) :: p
-        type(maillage), intent(inout) :: m
-        real, dimension(m%nx-1,m%ny-1) :: T
-        real :: dyn
-        integer :: i,j
+	type(phys), intent(in) :: p
+	type(maillage), intent(inout) :: m
+	real, dimension(m%nx-1,m%ny-1) :: T
+	real :: dyn
+	integer :: i,j
 
-        do i = 1,m%nx-1
-            do j = 1,m%ny-1
-                dyn = m%yn(i,j+1) - m%yn(i,j)
-                T(i,j) = abs(m%u(i,j))/(p%CFL*m%dx)+abs(m%v(i,j))/(p%CFL*dyn)&
-                +p%D/(p%R*(m%dx**2))+p%D/(p%R*(dyn**2))
-            end do
-        end do
-        m%dt = 1./maxval(T)
-        write(*,*) m%dt
+	do i = 1,m%nx-1
+	    do j = 1,m%ny-1
+		dyn = m%yn(i,j+1) - m%yn(i,j)
+		T(i,j) = abs(m%u(i,j))/(p%CFL*m%dx) + abs(m%v(i,j))/(p%CFL*dyn) &
+		+ p%D/(p%R*(m%dx**2))+p%D/(p%R*(dyn**2))
+	    end do
+	end do
+	m%dt = minval(1./T)
+	write(*,*) m%dt
 end subroutine pdt

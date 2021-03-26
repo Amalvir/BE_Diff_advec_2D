@@ -19,10 +19,9 @@ program main
         call pdt(p, m) 
         write(*,*) "[I] Exportation des données."
         call VTSWriter(0.,0,m%Nx,m%Ny,m%xn,m%yn,c%mat_c,m%u,m%v,'ini')
-        !m%dt = p%t_tot/real(m%nt-1)
+
         do i=1,m%nt
-                conc_n = c%mat_c ! La matrice C(i,j)^n
-                call concentration(p, m, c, conc_n) ! La matrice C(i,j)^n+1
+                call concentration(p, m, c) ! La matrice C(i,j)^n+1
                 call VTSWriter(real(i)*m%dt,i,m%nx,m%ny,m%xn,m%yn,c%mat_c,m%u,m%v,'int')
         end do
         call VTSWriter(p%t_tot,m%nt,m%nx,m%ny,m%xn,m%yn,c%mat_c,m%u,m%v,'end')
