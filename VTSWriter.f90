@@ -38,7 +38,8 @@ subroutine VTSWriter(Time,Step,nx,ny,x,y,C,U,V,opt)
 
   !  --- Ecriture d un fichier temporel au format paraview  ---
   write(num2char,'(i9.9)') Step
-  FileName = 'sol_'//trim(num2char)//'.vts'
+  if (opt == 'ini') call system("mkdir vts_file")
+  FileName = './vts_file/sol_'//trim(num2char)//'.vts'
   open(8,file=FileName)
   write(num2char,*) 3*nx*ny
   formatperso = '('//trim(num2char)//'(E15.9,1x))'

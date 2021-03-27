@@ -6,14 +6,13 @@ program main
         type(maillage) :: m
         type(phys) :: p
         type(conc) :: c
-        real, dimension(:,:), allocatable :: conc_n
         integer :: i
 
         call lecture_donnee(p,m)
         call def_maillage(p,m)
         call vitesse(p,m)
 
-        allocate(c%mat_c(m%nx-1,m%ny-1), conc_n(m%nx-1,m%ny-1))
+        allocate(c%mat_c(m%nx-1,m%ny-1))
         ! Conditions initiales
         c%mat_c(:,:) = 0.
         call pdt(p, m) 

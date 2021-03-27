@@ -81,7 +81,6 @@ subroutine vitesse(p,m)
         do i=1,m%nx-1
                 m%v(i,m%ny)=-p%alph*cos(PI*(m%xn(i,m%ny)+m%dx/2.)/p%L)*sin(PI*m%yn(i,m%ny)/p%L)
         end do
-
 end subroutine vitesse
 
 subroutine concentration(p, m, c)
