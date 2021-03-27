@@ -24,7 +24,7 @@ program main
                 call concentration(p, m, c) ! La matrice C(i,j)^n+1
                 call VTSWriter(real(i)*m%dt,i,m%nx,m%ny,m%xn,m%yn,c%mat_c,m%u,m%v,'int')
         end do
-        call VTSWriter(p%t_tot,m%nt,m%nx,m%ny,m%xn,m%yn,c%mat_c,m%u,m%v,'end')
+        call VTSWriter(m%nt*m%dt,m%nt,m%nx,m%ny,m%xn,m%yn,c%mat_c,m%u,m%v,'end')
         deallocate(m%xn,m%yn,c%mat_c,m%u,m%v)
         write(*,*) "[I] Fini."
 end program main

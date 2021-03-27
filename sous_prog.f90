@@ -94,7 +94,6 @@ subroutine concentration(p, m, c)
         integer :: i,j
         real :: vol, adv, diff
         
-        open(10,file="debug",position="append")
         call cal_Fe_adv(c, m)
         call cal_Fo_adv(c, m)
         call cal_Fn_adv(c, m, p)
@@ -110,11 +109,9 @@ subroutine concentration(p, m, c)
                         vol = m%dx*(m%yn(i,j+1) - m%yn(i,j))
                         adv = c%Fo_adv(i,j) + c%Fe_adv(i,j) + c%Fs_adv(i,j) + c%Fn_adv(i,j)
                         diff = c%Fo_diff(i,j) + c%Fe_diff(i,j) + c%Fs_diff(i,j) + c%Fn_diff(i,j)
-                        c%mat_c(i,j) = c%mat_c(i,j) - m%dt/vol*(adv - p%D*diff)
-                        write(10,*) i, j, m%dt/vol, adv, diff
+                        c%mat_c(i,j) = c%mat_c(i,j) - m%dt/vol*(adv*0. - p%D*diff)
                 end do
         end do
-        close(10)
         deallocate(c%Fe_adv,c%Fo_adv,c%Fn_adv,c%Fs_adv)
         deallocate(c%Fe_diff,c%Fo_diff,c%Fn_diff,c%Fs_diff)
 end subroutine concentration
@@ -294,7 +291,7 @@ subroutine cal_Fo_diff(c,m)
         do i = 2,m%nx-1
                 do j = 1,m%ny-1
                         So = m%yn(i,j+1) - m%yn(i,j)                        
-                        c%Fe_diff(i,j) = (c%mat_c(i,j) - c%mat_c(i-1,j))/m%dx * So
+                        c%Fo_diff(i,j) = -(c%mat_c(i,j) - c%mat_c(i-1,j))/m%dx * So
                 end do
         end do 
 
@@ -332,31 +329,31 @@ subroutine cal_Fn_diff(c,m,p)
 end subroutine cal_Fn_diff
 
 subroutine cal_Fs_diff(c,m,p)
-    use m_type 
-    implicit none
+	use m_type 
+	implicit none
 
-    type(conc), intent(inout) :: c
-        type(maillage), intent(in) :: m
-        type(phys), intent(in) :: p
-        integer :: i,j
-        real :: Ss, dyv
-        
-        Ss = m%dx
-        allocate(c%Fs_diff(m%nx-1,m%ny-1))
+	type(conc), intent(inout) :: c
+	type(maillage), intent(in) :: m
+	type(phys), intent(in) :: p
+	integer :: i,j
+	real :: Ss, dyv
 
-        do i = 1,m%nx-1
-                do j = 2,m%ny-1
-                        dyv = 1./2.*(m%yn(i,j+1) - m%yn(i,j-1))
-                        c%Fn_diff(i,j) = (c%mat_c(i,j) - c%mat_c(i,j-1))/dyv * Ss
-                end do
-        end do 
+	Ss = m%dx
+	allocate(c%Fs_diff(m%nx-1,m%ny-1))
 
-        ! Conditions aux limites
-      
-        do i = 1,m%nx-1
-                dyv = 1./2.*(m%yn(i,2) - m%yn(i,1))
-                c%Fn_diff(i,1) = (c%mat_c(i,1) - p%c1)/dyv * Ss
-        end do
+	do i = 1,m%nx-1
+		do j = 2,m%ny-1
+		        dyv = 1./2.*(m%yn(i,j+1) - m%yn(i,j-1))
+		        c%Fs_diff(i,j) = -(c%mat_c(i,j) - c%mat_c(i,j-1))/dyv * Ss
+		end do
+	end do 
+
+	! Conditions aux limites
+
+	do i = 1,m%nx-1
+		dyv = 1./2.*(m%yn(i,2) - m%yn(i,1))
+		c%Fs_diff(i,1) = -(c%mat_c(i,1) - p%c1)/dyv * Ss
+	end do
 end subroutine cal_Fs_diff
 
 subroutine pdt(p,m)
@@ -373,7 +370,7 @@ subroutine pdt(p,m)
 	    do j = 1,m%ny-1
 		dyn = m%yn(i,j+1) - m%yn(i,j)
 		T(i,j) = abs(m%u(i,j))/(p%CFL*m%dx) + abs(m%v(i,j))/(p%CFL*dyn) &
-		+ p%D/(p%R*(m%dx**2))+p%D/(p%R*(dyn**2))
+		+ p%D/(p%R*(m%dx**2.))+p%D/(p%R*(dyn**2.))
 	    end do
 	end do
 	m%dt = minval(1./T)
