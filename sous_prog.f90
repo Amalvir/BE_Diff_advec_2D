@@ -109,7 +109,7 @@ subroutine concentration(p, m, c)
                         vol = m%dx*(m%yn(i,j+1) - m%yn(i,j))
                         adv = c%Fo_adv(i,j) + c%Fe_adv(i,j) + c%Fs_adv(i,j) + c%Fn_adv(i,j)
                         diff = c%Fo_diff(i,j) + c%Fe_diff(i,j) + c%Fs_diff(i,j) + c%Fn_diff(i,j)
-                        c%mat_c(i,j) = c%mat_c(i,j) - m%dt/vol*(adv*0. - p%D*diff)
+                        c%mat_c(i,j) = c%mat_c(i,j) - m%dt/vol*(adv - p%D*diff)
                 end do
         end do
         deallocate(c%Fe_adv,c%Fo_adv,c%Fn_adv,c%Fs_adv)
@@ -130,9 +130,9 @@ subroutine cal_Fe_adv(c, m)
         allocate(c%Fe_adv(m%nx-1,m%ny-1))
 
         do i = 1,m%nx-2
-                do j = 1,m%ny-2
+                do j = 1,m%ny-1
                         Se = m%yn(i,j+1) - m%yn(i,j)
-                        if (m%u(i,j) >= 0.) then
+                        if (m%u(i+1,j) >= 0.) then
                                 c%Fe_adv(i,j) = c%mat_c(i,j)*m%u(i+1,j)*Se
                         else
                                 c%Fe_adv(i,j) = c%mat_c(i+1,j)*m%u(i+1,j)*Se
@@ -164,7 +164,7 @@ subroutine cal_Fo_adv(c,m)
         allocate(c%Fo_adv(m%nx-1,m%ny-1))
 
         do i = 2,m%nx-1
-                do j = 2,m%ny-1
+                do j = 1,m%ny-1
                         So = m%yn(i,j+1) - m%yn(i,j)
                         if (m%u(i,j) >= 0.) then
                                 c%Fo_adv(i,j) = -c%mat_c(i-1,j)*m%u(i,j)*So
@@ -198,7 +198,7 @@ subroutine cal_Fn_adv(c,m,p)
 
         allocate(c%Fn_adv(m%nx-1,m%ny-1))
         Sn = m%dx
-        do i = 1,m%nx-2
+        do i = 1,m%nx-1
                 do j = 1,m%ny-2
                         if (m%v(i,j+1) >= 0.) then
                                 c%Fn_adv(i,j) = c%mat_c(i,j)*m%v(i,j+1)*Sn
@@ -231,7 +231,7 @@ subroutine cal_Fs_adv(c,m,p)
 
         allocate(c%Fs_adv(m%nx-1,m%ny-1))
         Ss = m%dx
-        do i = 2,m%nx-1
+        do i = 1,m%nx-1
                 do j = 2,m%ny-1
                         if (m%v(i,j) >= 0.) then
                                 c%Fs_adv(i,j) = -c%mat_c(i,j-1)*m%v(i,j)*Ss
