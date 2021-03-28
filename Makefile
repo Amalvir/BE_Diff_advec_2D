@@ -4,7 +4,7 @@ OPT = -g -O0 -fbounds-check
 # Sans option de debuggage
 #OPT = -g
 
-OBJ = m_type.o prog.o sous_prog.o VTSWriter.o
+OBJ = m_type.o prog.o sous_prog.o VTSWriter.o flux.o
 EXE = prog.exe
 
 prog:	$(OBJ)
@@ -22,5 +22,7 @@ sous_prog.o :	sous_prog.f90
 VTSWriter.o :	VTSWriter.f90
 	$(FC) $(OPT) VTSWriter.f90 -c
 
+flux.o :	flux.f90
+	$(FC) $(OPT) flux.f90 -c
 clean :
 	/bin/rm -f $(OBJ) $(EXE) $(MODS) *.mod
