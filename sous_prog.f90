@@ -7,7 +7,6 @@ subroutine lecture_donnee(p,m)
         type(maillage), intent(out) :: m
         type(phys), intent(out) :: p
 
-        write(*,*) "[I] Lecture des données."
         open(10,file='donnee.dat')
         
         read(10,*) p%L
@@ -18,7 +17,6 @@ subroutine lecture_donnee(p,m)
         read(10,*) p%alph
         read(10,*) m%nx
         read(10,*) m%ny
-        read(10,*) m%nt
         read(10,*) p%cfl
         read(10,*) p%r
         close(10)
