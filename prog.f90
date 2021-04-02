@@ -7,6 +7,7 @@ program main
         type(phys) :: p
         type(conc) :: c
         integer :: i
+        logical :: cond
         
         write(*,*) "[I] Lecture des données."
         call lecture_donnee(p,m)
@@ -25,7 +26,13 @@ program main
 
         do i=1,m%nt
                 call concentration(p, m, c) ! La matrice C(i,j)^n+1
-                if (MOD(i,m%nt/100) == 0) then
+                if (m%nt < 99) then
+                	cond = .TRUE.
+                else
+                	cond = MOD(i,m%nt/99) == 0
+                end if
+                
+                if (cond) then
                 	call VTSWriter(real(i)*m%dt,i,m%nx,m%ny,m%xn,m%yn,c%mat_c,m%u,m%v,'int')
                 end if
         end do
