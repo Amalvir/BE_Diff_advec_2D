@@ -45,7 +45,7 @@ subroutine def_maillage(p,m)
 
         do i=1,m%Ny
                 y_reg = real(i-1)*p%L/real(m%Ny-1)
-                m%yn(:,i) = y_reg - p%L/(3.*PI)*sin((2.*PI*y_reg)/p%L)
+                m%yn(:,i) = y_reg !- p%L/(3.*PI)*sin((2.*PI*y_reg)/p%L)
         end do
 
 end subroutine def_maillage
@@ -63,20 +63,23 @@ subroutine vitesse(p,m)
 
         allocate(m%u(m%nx,m%ny-1), m%v(m%nx-1,m%ny))
 
-        do i = 1,m%nx-1
-            do j = 1,m%ny-1
-                dyn = m%yn(i,j+1) - m%yn(i,j)
-                m%u(i,j)=p%alph*sin(PI*m%xn(i,j)/p%L)*cos(PI*(m%yn(i,j) + dyn/2.)/p%L) ! beta = 0
-                m%v(i,j)=-p%alph*cos(PI*(m%xn(i,j)+m%dx/2.)/p%L)*sin(PI*m%yn(i,j)/p%L)
-            end do
-        end do
-        do j = 1,m%ny-1
-                dyn = m%yn(i,j+1) - m%yn(i,j)
-                m%u(m%nx,j)=p%alph*sin(PI*m%xn(m%nx,j)/p%L)*cos(PI*(m%yn(m%nx,j) + dyn/2.)/p%L)
-        end do
-        do i=1,m%nx-1
-                m%v(i,m%ny)=-p%alph*cos(PI*(m%xn(i,m%ny)+m%dx/2.)/p%L)*sin(PI*m%yn(i,m%ny)/p%L)
-        end do
+        !do i = 1,m%nx-1
+        !    do j = 1,m%ny-1
+        !        dyn = m%yn(i,j+1) - m%yn(i,j)
+        !        m%u(i,j)=p%alph*sin(PI*m%xn(i,j)/p%L)*cos(PI*(m%yn(i,j) + dyn/2.)/p%L) ! beta = 0
+        !        m%v(i,j)=-p%alph*cos(PI*(m%xn(i,j)+m%dx/2.)/p%L)*sin(PI*m%yn(i,j)/p%L)
+        !    end do
+        !end do
+        !do j = 1,m%ny-1
+        !        dyn = m%yn(i,j+1) - m%yn(i,j)
+        !        m%u(m%nx,j)=p%alph*sin(PI*m%xn(m%nx,j)/p%L)*cos(PI*(m%yn(m%nx,j) + dyn/2.)/p%L)
+        !end do
+        !do i=1,m%nx-1
+        !        m%v(i,m%ny)=-p%alph*cos(PI*(m%xn(i,m%ny)+m%dx/2.)/p%L)*sin(PI*m%yn(i,m%ny)/p%L)
+        !end do
+
+	m%u(:,:) = p%alph
+	m%v(:,:) = 0.
 end subroutine vitesse
 
 subroutine concentration(p, m, c)
