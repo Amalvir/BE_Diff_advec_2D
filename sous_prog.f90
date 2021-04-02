@@ -78,8 +78,8 @@ subroutine vitesse(p,m)
         !        m%v(i,m%ny)=-p%alph*cos(PI*(m%xn(i,m%ny)+m%dx/2.)/p%L)*sin(PI*m%yn(i,m%ny)/p%L)
         !end do
 
-	m%u(:,:) = p%alph
-	m%v(:,:) = 0.
+        m%u(:,:) = p%alph
+        m%v(:,:) = 0.
 end subroutine vitesse
 
 subroutine concentration(p, m, c)
@@ -115,27 +115,27 @@ subroutine concentration(p, m, c)
 end subroutine concentration
 
 subroutine pdt(p,m)
-	use m_type
-	implicit none 
+        use m_type
+        implicit none 
 
-	type(phys), intent(in) :: p
-	type(maillage), intent(inout) :: m
-	real, dimension(m%nx-1,m%ny-1) :: T
-	real :: dyn
-	integer :: i,j
-	
-	do i = 1,m%nx-1
-	    do j = 1,m%ny-1
-		dyn = m%yn(i,j+1) - m%yn(i,j)
-		T(i,j) = abs(m%u(i,j))/(p%CFL*m%dx) + abs(m%v(i,j))/(p%CFL*dyn) &
-		+ p%D/(p%R*(m%dx**2.))+p%D/(p%R*(dyn**2.))
-	    end do
-	end do
-	m%dt = minval(1./T)
-	m%nt = int(p%t_tot/m%dt)
-	write(*,*)
-	write(*,*) "Temps total (s)", p%t_tot
-	write(*,*) "dt (s)", m%dt
-	write(*,*) "Nombre points", m%nt
-	write(*,*)
+        type(phys), intent(in) :: p
+        type(maillage), intent(inout) :: m
+        real, dimension(m%nx-1,m%ny-1) :: T
+        real :: dyn
+        integer :: i,j
+        
+        do i = 1,m%nx-1
+            do j = 1,m%ny-1
+                dyn = m%yn(i,j+1) - m%yn(i,j)
+                T(i,j) = 1./(abs(m%u(i,j))/(p%CFL*m%dx) + abs(m%v(i,j))/(p%CFL*dyn) &
+                + p%D/(p%R*(m%dx**2.))+p%D/(p%R*(dyn**2.)))
+            end do
+        end do
+        m%dt = minval(T)
+        m%nt = int(p%t_tot/m%dt)
+        write(*,*)
+        write(*,*) "Temps total (s)", p%t_tot
+        write(*,*) "dt (s)", m%dt
+        write(*,*) "Nombre points", m%nt
+        write(*,*)
 end subroutine pdt
