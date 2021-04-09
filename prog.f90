@@ -33,7 +33,7 @@ program main
                 write(10,*) real(i)*m%dt
                 do j=1,m%ny-1
                     dyn = m%yn(m%nx/2,j+1) - m%yn(m%nx/2,j)
-                    write(10,*) c%mat_c(m%nx/2,j),theorique(m%yn(m%nx/2,j)+dyn,real(i)*m%dt,p)
+                    write(10,*) c%mat_c(m%nx/2,j),theorique(m%yn(m%nx/2,j)+dyn/2.,real(i)*m%dt,p)
                 end do
                 if (m%nt < 99) then
                         cond = .True.
