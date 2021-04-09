@@ -6,8 +6,9 @@ program main
         type(maillage) :: m
         type(phys) :: p
         type(conc) :: c
-        integer :: i
+        integer :: i,j
         logical :: cond
+        real :: theorique,dyn
         
         write(*,*) "[I] Lecture des données."
         call lecture_donnee(p,m)
@@ -18,17 +19,22 @@ program main
 
         allocate(c%mat_c(m%nx-1,m%ny-1))
         ! Conditions initiales
-        c%mat_c(1:(m%nx-1)/2,:) = p%c1
-        c%mat_c((m%nx-1)/2+1:m%nx-1,:) = p%c0
+        c%mat_c(:,1:(m%ny-1)/2) = p%c1
+        c%mat_c(:,(m%ny-1)/2+1:m%ny-1) = p%c0
         write(*,*) "[I] Calcul du pas de temps dt."
         call pdt(p, m)
         write(*,*) "[I] Exportation des données."
         call VTSWriter(0.,0,m%Nx,m%Ny,m%xn,m%yn,c%mat_c,m%u,m%v,'ini')
-        open(10,file="test_adv.csv")
 
+        open(10,file="test_diff.csv")
         do i=1,m%nt
                 call concentration(p, m, c) ! La matrice C(i,j)^n+1
-                write(10,*) c%mat_c(:,m%ny/2)
+
+                write(10,*) real(i)*m%dt
+                do j=1,m%ny-1
+                    dyn = m%yn(m%nx/2,j+1) - m%yn(m%nx/2,j)
+                    write(10,*) c%mat_c(m%nx/2,j),theorique(m%yn(m%nx/2,j)+dyn,real(i)*m%dt,p)
+                end do
                 if (m%nt < 99) then
                         cond = .True.
                 else
@@ -39,7 +45,9 @@ program main
                         call VTSWriter(real(i)*m%dt,i,m%nx,m%ny,m%xn,m%yn,c%mat_c,m%u,m%v,'int')
                 end if
         end do
+
         close(10)
+
         call VTSWriter(m%nt*m%dt,m%nt,m%nx,m%ny,m%xn,m%yn,c%mat_c,m%u,m%v,'end')
         deallocate(m%xn,m%yn,c%mat_c,m%u,m%v)
         write(*,*) "[I] Fini."

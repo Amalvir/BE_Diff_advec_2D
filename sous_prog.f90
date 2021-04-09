@@ -78,7 +78,7 @@ subroutine vitesse(p,m)
         !        m%v(i,m%ny)=-p%alph*cos(PI*(m%xn(i,m%ny)+m%dx/2.)/p%L)*sin(PI*m%yn(i,m%ny)/p%L)
         !end do
 
-        m%u(:,:) = p%alph
+        m%u(:,:) = 0. 
         m%v(:,:) = 0.
 end subroutine vitesse
 
@@ -139,3 +139,14 @@ subroutine pdt(p,m)
         write(*,*) "Nombre points", m%nt
         write(*,*)
 end subroutine pdt
+
+function theorique(x,t,p)
+        use m_type
+        implicit none 
+
+        type(phys), intent(in) :: p
+        real, intent(in) :: x,t
+        real :: theorique
+
+        theorique = (p%c1-p%c0)*0.5*(1. - ERF((x-p%L/2.)/(2.*SQRT(p%D*t)))) + p%c0
+end function theorique
