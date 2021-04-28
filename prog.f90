@@ -18,7 +18,7 @@ program main
 
         allocate(c%mat_c(m%nx-1,m%ny-1))
         ! Conditions initiales
-        c%mat_c(:,:) = 0.
+        c%mat_c(:,:) = p%C0 
         write(*,*) "[I] Calcul du pas de temps dt."
         call pdt(p, m)
         write(*,*) "[I] Exportation des données."
