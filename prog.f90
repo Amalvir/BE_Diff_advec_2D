@@ -27,13 +27,13 @@ program main
         do i=1,m%nt
                 call concentration(p, m, c) ! La matrice C(i,j)^n+1
                 if (m%nt < 99) then
-                	cond = .TRUE.
+                        cond = .TRUE.
                 else
-                	cond = MOD(i,m%nt/99) == 0
+                        cond = MOD(i,m%nt/99) == 0
                 end if
                 
                 if (cond) then
-                	call VTSWriter(real(i)*m%dt,i,m%nx,m%ny,m%xn,m%yn,c%mat_c,m%u,m%v,'int')
+                        call VTSWriter(real(i)*m%dt,i,m%nx,m%ny,m%xn,m%yn,c%mat_c,m%u,m%v,'int')
                 end if
         end do
         call VTSWriter(m%nt*m%dt,m%nt,m%nx,m%ny,m%xn,m%yn,c%mat_c,m%u,m%v,'end')
